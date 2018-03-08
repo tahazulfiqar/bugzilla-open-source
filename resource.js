@@ -301,18 +301,16 @@ AsyncResource.prototype = {
       this._log.debug("Caught exception visiting headers in _onComplete", ex);
     }
 
-    function retPOJO(data){
-
-    return {
+    function retPOJO(){
+      this.data = data
       this.url = channel.URI.spec;
       this.status=status;
       this.success=success;
       this.header = headers;
-    };
 
     }
 
-    let ret = retPOJO(data)
+    let ret = new retPOJO()
 
     if (!success) {
       this._log.warn(`${action} request to ${ret.url} failed with status ${status}`);
@@ -322,7 +320,7 @@ AsyncResource.prototype = {
     // actual fetch, so be warned!
     XPCOMUtils.defineLazyGetter(ret, "obj", () => {
       try {
-        return JSON.parse(ret);
+        return JSON.parse(ret.data);
       } catch (ex) {
         this._log.warn("Got exception parsing response body", ex);
         // Stringify to avoid possibly printing non-printable characters.

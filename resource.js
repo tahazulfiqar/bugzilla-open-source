@@ -301,11 +301,11 @@ AsyncResource.prototype = {
       this._log.debug("Caught exception visiting headers in _onComplete", ex);
     }
 
-    let ret     = new String(data);
-    ret.url     = channel.URI.spec;
-    ret.status  = status;
-    ret.success = success;
-    ret.headers = headers;
+    function retHelper(data){
+      return {data: String(data), url:url, status:status, success: success, header: header};
+    }
+
+    let ret = retHelper(data)
 
     if (!success) {
       this._log.warn(`${action} request to ${ret.url} failed with status ${status}`);
@@ -315,7 +315,7 @@ AsyncResource.prototype = {
     // actual fetch, so be warned!
     XPCOMUtils.defineLazyGetter(ret, "obj", () => {
       try {
-        return JSON.parse(ret);
+        return JSON.parse(ret.data);
       } catch (ex) {
         this._log.warn("Got exception parsing response body", ex);
         // Stringify to avoid possibly printing non-printable characters.

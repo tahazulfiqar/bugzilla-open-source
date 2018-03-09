@@ -301,11 +301,16 @@ AsyncResource.prototype = {
       this._log.debug("Caught exception visiting headers in _onComplete", ex);
     }
 
-    function retHelper(data){
-      return {data: String(data), url:url, status:status, success: success, header: header};
+    function retPOJO(){
+      this.data = String(data)
+      this.url = channel.URI.spec;
+      this.status=status;
+      this.success=success;
+      this.header = headers;
+
     }
 
-    let ret = retHelper(data)
+    let ret = retPOJO()
 
     if (!success) {
       this._log.warn(`${action} request to ${ret.url} failed with status ${status}`);
